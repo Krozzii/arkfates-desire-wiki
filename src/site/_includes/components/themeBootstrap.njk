@@ -1,0 +1,64 @@
+<script>
+  (() => {
+    const storageKey = "arkfates-appearance";
+    const allowedPreferences = ["dark", "light", "system"];
+    const root = document.documentElement;
+    const systemPreference = window.matchMedia("(prefers-color-scheme: light)");
+    let preference = "dark";
+
+    try {
+      const savedPreference = window.localStorage.getItem(storageKey);
+      if (allowedPreferences.includes(savedPreference)) preference = savedPreference;
+    } catch (_) {
+      // Storage may be unavailable in private or restricted browser contexts.
+    }
+
+    const applyTheme = () => {
+      const resolvedTheme = preference === "system"
+        ? (systemPreference.matches ? "light" : "dark")
+        : preference;
+
+      root.dataset.theme = resolvedTheme;
+      root.dataset.themePreference = preference;
+      if (document.body) {
+        document.body.classList.toggle("theme-dark", resolvedTheme === "dark");
+        document.body.classList.toggle("theme-light", resolvedTheme === "light");
+      }
+      document.querySelectorAll("[data-appearance-select]").forEach((select) => {
+        select.value = preference;
+      });
+    };
+
+    const setPreference = (nextPreference) => {
+      if (!allowedPreferences.includes(nextPreference)) return;
+      preference = nextPreference;
+      try {
+        window.localStorage.setItem(storageKey, preference);
+      } catch (_) {
+        // The current page still changes even when persistence is unavailable.
+      }
+      applyTheme();
+    };
+
+    applyTheme();
+    if (!document.body) {
+      const bodyObserver = new MutationObserver(() => {
+        if (document.body) {
+          applyTheme();
+          bodyObserver.disconnect();
+        }
+      });
+      bodyObserver.observe(root, { childList: true });
+    }
+    document.addEventListener("DOMContentLoaded", applyTheme, { once: true });
+    document.addEventListener("change", (event) => {
+      if (event.target.matches("[data-appearance-select]")) {
+        setPreference(event.target.value);
+      }
+    });
+    systemPreference.addEventListener?.("change", () => {
+      if (preference === "system") applyTheme();
+    });
+    window.ArkFatesAppearance = { getPreference: () => preference, setPreference };
+  })();
+</script>

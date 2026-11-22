@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hero": {
+    "kicker": "Archivo oficial · Universo narrativo",
+    "titleFirst": "ArkFates",
+    "titleSecond": "Desiré",
+    "description": "El hogar oficial de una obra original creada por Krozzii: un espacio para sus relatos y el conocimiento de su universo.",
+    "alignment": "left",
+    "height": 58,
+    "backgroundStart": "#111110",
+    "backgroundEnd": "#171716",
+    "gradientAngle": 135,
+    "accent": "#B79A63",
+    "image": {
+      "kind": "none",
+      "ref": "",
+      "alt": "",
+      "positionX": 50,
+      "positionY": 50,
+      "zoom": 100,
+      "overlay": 52
+    }
+  }
+}

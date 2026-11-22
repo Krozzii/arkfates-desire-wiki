@@ -11,6 +11,10 @@ const HOME_TAG = "gardenEntry";
  * what the rest of the build keys on (see notes/notes.11tydata.js).
  */
 function frontmatterIsHomePage(data) {
+  if (!data || data["dg-publish"] !== true) {
+    return false;
+  }
+
   const tags = data && data.tags;
   if (Array.isArray(tags)) {
     return tags.includes(HOME_TAG);
@@ -35,11 +39,9 @@ function fileIsHomePage(filePath) {
   try {
     return frontmatterIsHomePage(matter(raw, matterOptions).data);
   } catch {
-    // Unparseable frontmatter that mentions the tag. Assume it is the home
-    // page: a wrong "yes" only keeps the fallback front page off, while a
-    // wrong "no" would make two templates write `/index.html` and fail the
-    // whole build.
-    return true;
+    // Fail closed: malformed or incomplete metadata cannot authorize a note
+    // as the published home page.
+    return false;
   }
 }
 

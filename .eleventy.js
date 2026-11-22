@@ -7,10 +7,66 @@ const faviconsPlugin = require("eleventy-plugin-gen-favicons");
 const normalizeFavicon = require("./src/site/normalize-favicon.js");
 const { convertMdHrefs } = require("./src/helpers/linkUtils");
 const nodePath = require("path");
+const {
+  buildLibraryCollections,
+  formatPublicationDate,
+  libraryById,
+  libraryChapterNavigation,
+  libraryChaptersForVolume,
+  libraryVolumesFor,
+  publicationDateISO,
+  readingTime,
+} = require("./src/helpers/library");
+
+const NOTE_CONTENT_DIR = nodePath.resolve(__dirname, "src/site/notes");
+// Studio renders into an isolated, ignored directory so an editor preview can
+// never clean or overwrite the public dist output.
+const BUILD_OUTPUT_DIR = process.env.ARKFATES_STUDIO_PREVIEW === "1"
+  ? ".arkfates-studio/preview"
+  : "dist";
 
 const FAVICON_SOURCE = "./src/site/favicon.svg";
 const FAVICON_NORMALIZED = "./.cache/favicon.normalized.svg";
 normalizeFavicon(FAVICON_SOURCE, FAVICON_NORMALIZED);
+
+function singleFlightPlugin(plugin, shortcodeName) {
+  return (eleventyConfig, options) => {
+    const inFlight = new Map();
+    const configWithSingleFlightShortcode = new Proxy(eleventyConfig, {
+      get(target, property) {
+        if (property === "addAsyncShortcode") {
+          return (name, callback, ...args) => {
+            if (name !== shortcodeName) {
+              return target.addAsyncShortcode(name, callback, ...args);
+            }
+
+            const sharedCallback = (...callArgs) => {
+              const key = JSON.stringify(callArgs);
+              let promise = inFlight.get(key);
+              if (!promise) {
+                promise = Promise.resolve().then(() => callback(...callArgs));
+                inFlight.set(key, promise);
+                const clear = () => {
+                  if (inFlight.get(key) === promise) inFlight.delete(key);
+                };
+                promise.then(clear, clear);
+              }
+              return promise;
+            };
+
+            return target.addAsyncShortcode(name, sharedCallback, ...args);
+          };
+        }
+
+        const value = Reflect.get(target, property, target);
+        return typeof value === "function" ? value.bind(target) : value;
+      },
+    });
+
+    return plugin(configWithSingleFlightShortcode, options);
+  };
+}
+
 const tocPlugin = require("eleventy-plugin-nesting-toc");
 const { parse } = require("node-html-parser");
 const htmlMinifier = require("html-minifier-terser");
@@ -134,7 +190,7 @@ function transformImage(src, cls, alt, sizes, widths = ["500", "700"]) {
   let options = {
     widths: widths,
     formats: ["webp", "jpeg"],
-    outputDir: "./dist/img/optimized",
+    outputDir: nodePath.resolve(__dirname, BUILD_OUTPUT_DIR, "img/optimized"),
     urlPath: "/img/optimized",
   };
 
@@ -237,6 +293,35 @@ const markdownFileTypeRegex = /\.(md|markdown)$/i;
 const isMarkdownPage = (inputPath) => inputPath && inputPath.match(markdownFileTypeRegex);
 
 module.exports = function(eleventyConfig) {
+  // The Obsidian publisher normally exports only opted-in notes. Apply the
+  // same allow-list at build time so a note copied into this input directory
+  // cannot be emitted or enter any collection unless explicitly published.
+  eleventyConfig.addPreprocessor(
+    "published-notes-only",
+    ["md", "markdown"],
+    (data) => {
+      const inputPath = data.page && data.page.inputPath;
+      if (!inputPath) return;
+
+      const absoluteInputPath = nodePath.isAbsolute(inputPath)
+        ? inputPath
+        : nodePath.resolve(__dirname, inputPath);
+      const relativeInputPath = nodePath.relative(
+        NOTE_CONTENT_DIR,
+        absoluteInputPath
+      );
+      const isNoteMarkdown =
+        relativeInputPath !== "" &&
+        !nodePath.isAbsolute(relativeInputPath) &&
+        relativeInputPath !== ".." &&
+        !relativeInputPath.startsWith(`..${nodePath.sep}`);
+
+      if (isNoteMarkdown && data["dg-publish"] !== true) {
+        return false;
+      }
+    }
+  );
+
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true,
   });
@@ -465,9 +550,44 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.setLibrary("md", markdownLib);
 
+  // Build the editorial library only from notes that survived the global
+  // dg-publish preprocessor. The helper validates hierarchy and route keys.
+  eleventyConfig.addCollection("library", (collectionApi) =>
+    buildLibraryCollections(collectionApi.getFilteredByTag("note")),
+  );
+
   eleventyConfig.addFilter("isoDate", function(date) {
     return date && date.toISOString();
   });
+
+  // Category listings consume the same allow-listed note collection as every
+  // other public index, with an explicit publication check as a second guard.
+  eleventyConfig.addFilter("encyclopediaEntries", function(notes, category) {
+    return (notes || [])
+      .filter(
+        (note) =>
+          note.data &&
+          note.data["dg-publish"] === true &&
+          note.data.hide !== true &&
+          note.data.editorialType === "encyclopediaEntry" &&
+          note.data.encyclopediaCategory === category,
+      )
+      .sort((a, b) =>
+        String(a.data.title || a.fileSlug).localeCompare(
+          String(b.data.title || b.fileSlug),
+          undefined,
+          { sensitivity: "base" },
+        ),
+      );
+  });
+
+  eleventyConfig.addFilter("libraryVolumesFor", libraryVolumesFor);
+  eleventyConfig.addFilter("libraryChaptersForVolume", libraryChaptersForVolume);
+  eleventyConfig.addFilter("libraryById", libraryById);
+  eleventyConfig.addFilter("libraryChapterNavigation", libraryChapterNavigation);
+  eleventyConfig.addFilter("libraryReadingTime", readingTime);
+  eleventyConfig.addFilter("libraryDate", formatPublicationDate);
+  eleventyConfig.addFilter("libraryDateISO", publicationDateISO);
 
   eleventyConfig.addFilter("link", function(str) {
     return (
@@ -860,7 +980,9 @@ module.exports = function(eleventyConfig) {
     }
   });
   eleventyConfig.addWatchTarget(FAVICON_SOURCE);
-  eleventyConfig.addPlugin(faviconsPlugin, { outputDir: "dist" });
+  eleventyConfig.addPlugin(singleFlightPlugin(faviconsPlugin, "favicons"), {
+    outputDir: nodePath.resolve(__dirname, BUILD_OUTPUT_DIR),
+  });
   eleventyConfig.addPlugin(tocPlugin, {
     ul: true,
     tags: ["h1", "h2", "h3", "h4", "h5", "h6"],
@@ -909,7 +1031,7 @@ module.exports = function(eleventyConfig) {
   return {
     dir: {
       input: "src/site",
-      output: "dist",
+      output: BUILD_OUTPUT_DIR,
       data: `_data`,
     },
     templateFormats: ["njk", "md", "11ty.js", "canvas"],

@@ -6,15 +6,24 @@ import { hasHomePageNote, frontmatterIsHomePage } from "./homePage.js";
 
 describe("frontmatterIsHomePage", () => {
   it("detects the gardenEntry tag in an array", () => {
-    expect(frontmatterIsHomePage({ tags: ["note", "gardenEntry"] })).toBe(true);
+    expect(
+      frontmatterIsHomePage({ "dg-publish": true, tags: ["note", "gardenEntry"] })
+    ).toBe(true);
   });
 
   it("detects the gardenEntry tag in a comma separated string", () => {
-    expect(frontmatterIsHomePage({ tags: "note, gardenEntry" })).toBe(true);
+    expect(
+      frontmatterIsHomePage({ "dg-publish": true, tags: "note, gardenEntry" })
+    ).toBe(true);
   });
 
   it("ignores notes without the tag", () => {
-    expect(frontmatterIsHomePage({ tags: ["note"] })).toBe(false);
+    expect(frontmatterIsHomePage({ "dg-publish": true, tags: ["note"] })).toBe(false);
+    expect(frontmatterIsHomePage({ "dg-publish": false, tags: ["gardenEntry"] })).toBe(false);
+    expect(frontmatterIsHomePage({ tags: ["gardenEntry"] })).toBe(false);
+    expect(
+      frontmatterIsHomePage({ "dg-publish": "true", tags: ["gardenEntry"] })
+    ).toBe(false);
     expect(frontmatterIsHomePage({})).toBe(false);
     expect(frontmatterIsHomePage(undefined)).toBe(false);
   });
@@ -49,21 +58,27 @@ describe("hasHomePageNote", () => {
   });
 
   it("finds a tagged note in a nested folder", () => {
-    write("a.md", "---\ndg-publish: true\n---\nhello");
     write("folder/home.md", "---\ndg-publish: true\ntags:\n  - gardenEntry\n---\nwelcome");
     expect(hasHomePageNote(dir)).toBe(true);
+  });
+
+  it("ignores gardenEntry notes unless dg-publish is the boolean true", () => {
+    write("false.md", "---\ndg-publish: false\ntags: [gardenEntry]\n---\nprivate");
+    write("missing.md", "---\ntags: [gardenEntry]\n---\nnot published");
+    write("string.md", "---\ndg-publish: 'true'\ntags: [gardenEntry]\n---\nnot a boolean");
+    expect(hasHomePageNote(dir)).toBe(false);
   });
 
   it("tolerates Obsidian's escaped pipe in frontmatter", () => {
     write(
       "home.md",
-      "---\nlinks: \"[[Other\\|Alias]]\"\ntags: [gardenEntry]\n---\nwelcome"
+      "---\ndg-publish: true\nlinks: \"[[Other\\|Alias]]\"\ntags: [gardenEntry]\n---\nwelcome"
     );
     expect(hasHomePageNote(dir)).toBe(true);
   });
 
-  it("treats unparseable frontmatter that mentions the tag as a home page", () => {
+  it("does not treat unparseable frontmatter as a published home page", () => {
     write("home.md", "---\ntags: [gardenEntry\nbroken: : :\n---\nwelcome");
-    expect(hasHomePageNote(dir)).toBe(true);
+    expect(hasHomePageNote(dir)).toBe(false);
   });
 });

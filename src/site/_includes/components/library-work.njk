@@ -1,0 +1,61 @@
+{% set volumes = collections.library.volumes | libraryVolumesFor(libraryId) %}
+<article class="library-work-page" aria-labelledby="library-work-title">
+  <header class="library-work-hero{% if libraryCover %} has-cover{% endif %}">
+    {% if libraryCover %}
+    <img class="library-cover" src="{{ libraryCover }}" alt="{{ libraryCoverAlt or ('Portada de ' + title) }}" fetchpriority="high" decoding="async">
+    {% endif %}
+    <div class="library-work-heading">
+      <p class="library-byline">{{ libraryAuthor or "Krozzii" }}</p>
+      <h1 id="library-work-title">{{ title }}</h1>
+      {% if libraryDescription %}<p class="library-description">{{ libraryDescription }}</p>{% endif %}
+      <div class="library-work-details">
+        {% if libraryStatus %}<span>{{ libraryStatus | capitalize }}</span>{% endif %}
+        {% if volumes.length %}<span>{% if volumes.length == 1 %}1 volumen{% else %}{{ volumes.length }} volúmenes{% endif %}</span>{% endif %}
+      </div>
+      {% if libraryGenres and libraryGenres.length %}
+      <ul class="library-taxonomy" aria-label="Géneros">
+        {% for genre in libraryGenres %}<li>{{ genre }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+      {% if libraryTags and libraryTags.length %}
+      <ul class="library-taxonomy" aria-label="Etiquetas">
+        {% for tag in libraryTags %}<li>{{ tag }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if librarySynopsis %}
+  <section class="library-synopsis" aria-labelledby="library-synopsis-title">
+    <h2 id="library-synopsis-title">Sinopsis</h2>
+    <p>{{ librarySynopsis }}</p>
+  </section>
+  {% endif %}
+
+  {% if content | trim %}
+  <section class="library-work-notes" aria-label="Información de la obra">
+    {{ content | hideDataview | taggify | link | resolveMdLinks | safe }}
+  </section>
+  {% endif %}
+
+  <section class="library-volume-section" aria-labelledby="library-volumes-title">
+    <h2 id="library-volumes-title">Volúmenes</h2>
+    {% if volumes.length %}
+    <ol class="library-volume-list">
+      {% for volume in volumes %}
+        {% set chapters = collections.library.chapters | libraryChaptersForVolume(libraryId, volume.data.libraryId) %}
+        <li class="library-volume-row">
+          <a href="{{ volume.url }}">
+            <span class="library-volume-number">Volumen {{ volume.data.libraryNumber }}</span>
+            <strong>{{ volume.data.title }}</strong>
+            {% if volume.data.libraryDescription %}<span class="library-description">{{ volume.data.libraryDescription }}</span>{% endif %}
+            <span class="library-volume-count">{% if chapters.length == 1 %}1 capítulo publicado{% else %}{{ chapters.length }} capítulos publicados{% endif %}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="library-empty">Esta obra todavía no tiene volúmenes publicados.</p>
+    {% endif %}
+  </section>
+</article>

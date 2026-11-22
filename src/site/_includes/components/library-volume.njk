@@ -1,0 +1,35 @@
+{% set work = collections.library.works | libraryById(libraryWorkId) %}
+{% set chapters = collections.library.chapters | libraryChaptersForVolume(libraryWorkId, libraryId) %}
+<article class="library-volume-page" aria-labelledby="library-volume-title">
+  <header class="library-volume-hero{% if libraryCover %} has-cover{% endif %}">
+    {% if libraryCover %}
+    <img class="library-cover" src="{{ libraryCover }}" alt="{{ libraryCoverAlt or ('Portada de ' + title) }}" fetchpriority="high" decoding="async">
+    {% endif %}
+    <div>
+      <p class="library-byline"><a href="{{ work.url }}">{{ work.data.title }}</a></p>
+      <p class="library-volume-number">Volumen {{ libraryNumber }}</p>
+      <h1 id="library-volume-title">{{ title }}</h1>
+      {% if libraryDescription %}<p class="library-description">{{ libraryDescription }}</p>{% endif %}
+    </div>
+  </header>
+
+  <section class="library-chapter-section" aria-labelledby="library-chapters-title">
+    <h2 id="library-chapters-title">Índice de capítulos</h2>
+    {% if chapters.length %}
+    <ol class="library-chapter-list">
+      {% for chapter in chapters %}
+      <li class="library-chapter-row">
+        <a href="{{ chapter.url }}">
+          <span class="library-chapter-number">Capítulo {{ chapter.data.libraryNumber }}</span>
+          <strong>{{ chapter.data.title }}</strong>
+          {% if chapter.data.libraryPublishedAt %}<time datetime="{{ chapter.data.libraryPublishedAt | libraryDateISO }}">{{ chapter.data.libraryPublishedAt | libraryDate }}</time>{% endif %}
+          {% if chapter.data.libraryDescription %}<span class="library-description">{{ chapter.data.libraryDescription }}</span>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="library-empty">Aún no hay capítulos publicados para este volumen.</p>
+    {% endif %}
+  </section>
+</article>

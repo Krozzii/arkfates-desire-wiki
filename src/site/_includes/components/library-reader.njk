@@ -1,0 +1,68 @@
+{% set work = collections.library.works | libraryById(libraryWorkId) %}
+{% set volume = collections.library.volumes | libraryById(libraryVolumeId) %}
+{% set chapters = collections.library.chapters | libraryChaptersForVolume(libraryWorkId, libraryVolumeId) %}
+{% set chapterNavigation = chapters | libraryChapterNavigation(libraryId) %}
+{% set chapterContent = content | hideDataview | taggify | link | resolveMdLinks %}
+{% set readingMinutes = chapterContent | libraryReadingTime %}
+<article class="library-reader" aria-labelledby="library-chapter-title">
+  <header class="library-reader-header">
+    <p class="library-reader-context"><a href="{{ work.url }}">{{ work.data.title }}</a><span aria-hidden="true">/</span><a href="{{ volume.url }}">{{ volume.data.title }}</a></p>
+    <p class="library-chapter-number">Capítulo {{ libraryNumber }}</p>
+    <h1 id="library-chapter-title">{{ title }}</h1>
+    <div class="library-reader-meta">
+      {% if libraryPublishedAt %}<time datetime="{{ libraryPublishedAt | libraryDateISO }}">{{ libraryPublishedAt | libraryDate }}</time>{% endif %}
+      {% if readingMinutes %}<span>{{ readingMinutes }} min de lectura</span>{% endif %}
+    </div>
+    <div class="library-reader-controls" role="group" aria-label="Tamaño del texto" data-library-reader-controls>
+      <button type="button" data-reader-size="down" aria-label="Reducir tamaño del texto">A−</button>
+      <button type="button" data-reader-size="reset" aria-label="Restablecer tamaño del texto">A</button>
+      <button type="button" data-reader-size="up" aria-label="Aumentar tamaño del texto">A+</button>
+      <output aria-live="polite" data-reader-size-output>100%</output>
+    </div>
+  </header>
+
+  <div class="library-reader-content" data-library-reader-content>
+    {% if chapterContent | trim %}
+      {{ chapterContent | safe }}
+    {% else %}
+      <p class="library-empty">Este capítulo todavía no tiene texto publicado.</p>
+    {% endif %}
+  </div>
+
+  <nav class="library-chapter-pagination" aria-label="Navegación de capítulos">
+    <div class="library-pagination-previous">
+      {% if chapterNavigation.previous %}
+      <a href="{{ chapterNavigation.previous.url }}"><span>Capítulo anterior</span><strong>{{ chapterNavigation.previous.data.title }}</strong></a>
+      {% else %}<span class="library-pagination-edge">Inicio del volumen</span>{% endif %}
+    </div>
+    <a class="library-volume-index-link" href="{{ volume.url }}">Índice del volumen</a>
+    <div class="library-pagination-next">
+      {% if chapterNavigation.next %}
+      <a href="{{ chapterNavigation.next.url }}"><span>Capítulo siguiente</span><strong>{{ chapterNavigation.next.data.title }}</strong></a>
+      {% else %}<span class="library-pagination-edge">Fin del volumen</span>{% endif %}
+    </div>
+  </nav>
+</article>
+
+<script>
+  (() => {
+    const controls = document.querySelector("[data-library-reader-controls]");
+    const reader = document.querySelector("[data-library-reader-content]");
+    const output = document.querySelector("[data-reader-size-output]");
+    if (!controls || !reader || !output) return;
+
+    let scale = 1;
+    controls.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-reader-size]");
+      if (!button) return;
+
+      if (button.dataset.readerSize === "up") scale = Math.min(1.4, scale + 0.1);
+      if (button.dataset.readerSize === "down") scale = Math.max(0.8, scale - 0.1);
+      if (button.dataset.readerSize === "reset") scale = 1;
+
+      reader.style.setProperty("--library-reader-scale", scale.toFixed(1));
+      output.value = `${Math.round(scale * 100)}%`;
+      output.textContent = output.value;
+    });
+  })();
+</script>

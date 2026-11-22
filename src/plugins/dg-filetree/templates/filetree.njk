@@ -26,6 +26,8 @@
                     {% endfor %}
                 </div>
 
+                {% include "components/editorialNav.njk" %}
+
                 <div class="navbar-actions">
                     {% set slotName = "navbar.actions" %}{% include "components/pluginSlot.njk" %}
                     {% include "components/pagePanelButton.njk" %}
@@ -52,6 +54,7 @@
          {% for imp in dynamics.filetree.afterTitle %}
             {% include imp %}
         {% endfor %}
+         {% include "components/editorialNav.njk" %}
         {% set slotName = "filetree.actions" %}{% include "components/pluginSlot.njk" %}
          {#- The tree itself is rendered once to /filetree.html (see ../index.js) rather than into every page. -#}
          <div class="folder" x-data="{isOpen: true}"></div>

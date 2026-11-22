@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111110">
+    <title>ARKFATES STUDIO</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <div class="studio-shell">
+      <aside class="studio-sidebar" aria-label="Navegación del Studio">
+        <a class="studio-brand" href="/" aria-label="ARKFATES STUDIO, panel">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span><strong>ARKFATES</strong><small>STUDIO</small></span>
+        </a>
+        <nav class="studio-nav">
+          <a href="#dashboard" class="nav-link is-current" data-nav-view="dashboard"><span class="nav-glyph glyph-overview" aria-hidden="true"></span>Panel</a>
+          <p class="nav-group-label">Sitio</p>
+          <a href="#inicio" class="nav-link" data-nav-view="home"><span class="nav-glyph glyph-home" aria-hidden="true"></span>Inicio</a>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-archive" aria-hidden="true"></span>Enciclopedia <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-book" aria-hidden="true"></span>Biblioteca <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-bell" aria-hidden="true"></span>Novedades <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-community" aria-hidden="true"></span>Comunidad <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-info" aria-hidden="true"></span>Acerca de <small>Preparación</small></span>
+          <p class="nav-group-label">Herramientas</p>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-image" aria-hidden="true"></span>Biblioteca multimedia <small>Parcial</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-sliders" aria-hidden="true"></span>Personalización visual <small>Preparación</small></span>
+          <a href="#preview" class="nav-link" data-nav-view="preview"><span class="nav-glyph glyph-preview" aria-hidden="true"></span>Vista previa</a>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-publish" aria-hidden="true"></span>Publicación <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-history" aria-hidden="true"></span>Historial <small>Preparación</small></span>
+          <span class="nav-link is-pending"><span class="nav-glyph glyph-settings" aria-hidden="true"></span>Configuración <small>Preparación</small></span>
+        </nav>
+        <div class="sidebar-footnote"><span class="online-dot"></span><span>Entorno local<br><small>Solo este ordenador</small></span></div>
+      </aside>
+
+      <main class="studio-main">
+        <header class="topbar">
+          <details class="mobile-navigation">
+            <summary aria-label="Abrir navegación">Secciones</summary>
+            <div class="mobile-navigation-panel"></div>
+          </details>
+          <div class="breadcrumb"><span>ARKFATES STUDIO</span><b>/</b><strong id="breadcrumb-current">Panel</strong></div>
+          <div class="topbar-actions">
+            <span class="local-indicator"><span class="online-dot"></span>Local</span>
+            <a class="site-link" href="http://127.0.0.1:3002/" target="_blank" rel="noreferrer">Abrir sitio de prueba <span aria-hidden="true">↗</span></a>
+          </div>
+        </header>
+
+        <section class="dashboard-section" id="dashboard-view" aria-labelledby="dashboard-title">
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">Archivo editorial</p>
+              <h1 id="dashboard-title">El sitio, desde un solo lugar.</h1>
+              <p class="intro-copy">Administra la portada y revisa una versión local generada por Eleventy. Los cambios se guardan como borrador en este ordenador.</p>
+            </div>
+            <button class="button button-primary" type="button" data-open-home>Editar la portada</button>
+          </div>
+          <div class="status-grid" aria-label="Estado actual">
+            <article class="status-panel"><p>Sitio generado</p><strong id="site-status">Consultando…</strong><small id="site-time">El estado se lee de dist/index.html</small></article>
+            <article class="status-panel"><p>Studio</p><strong><span class="online-dot"></span>Disponible</strong><small>Servidor ligado a 127.0.0.1</small></article>
+            <article class="status-panel"><p>Borrador de portada</p><strong id="draft-status">Consultando…</strong><small id="draft-time">Sin historial remoto</small></article>
+            <article class="status-panel"><p>Vista previa</p><strong id="preview-status">Consultando…</strong><small id="preview-time">Salida temporal de Eleventy</small></article>
+          </div>
+          <div class="dashboard-lower">
+            <section class="panel dashboard-card">
+              <div class="panel-heading"><div><p class="eyebrow">Continuar</p><h2>Portada oficial</h2></div><span class="mini-rule"></span></div>
+              <p>Selecciona el hero en el sitio real para editar su texto, composición, colores e imagen. El resto de secciones permanece igual.</p>
+              <button class="text-button" type="button" data-open-home>Volver al editor <span aria-hidden="true">→</span></button>
+            </section>
+            <section class="panel dashboard-card changes-card">
+              <div class="panel-heading"><div><p class="eyebrow">Actividad local</p><h2>Último cambio</h2></div><span class="mini-rule"></span></div>
+              <p id="recent-change">Todavía no hay borradores guardados desde el Studio.</p>
+              <small>Este MVP no registra historial de archivos ni cambios hechos fuera del Studio.</small>
+            </section>
+          </div>
+        </section>
+
+        <section class="editor-section" id="home-view" aria-labelledby="home-title" hidden>
+          <div class="editor-heading">
+            <div><p class="eyebrow">Página / Inicio</p><h1 id="home-title">Editar la portada</h1><p>Selecciona una zona del hero en la vista previa. Los cambios se reflejan al instante aquí.</p></div>
+            <div class="editor-actions">
+              <button class="button button-quiet" id="discard-draft" type="button" disabled>Recuperar versión guardada</button>
+              <button class="button button-primary" id="save-draft" type="button">Guardar borrador</button>
+            </div>
+          </div>
+
+          <div class="editor-notice" id="editor-notice" role="status" aria-live="polite" hidden></div>
+          <div class="workspace">
+            <section class="preview-panel panel" id="preview-view" aria-labelledby="preview-heading">
+              <div class="preview-toolbar">
+                <div><p class="eyebrow">Vista de Eleventy</p><h2 id="preview-heading">Previsualización</h2></div>
+                <div class="preview-controls">
+                  <div class="viewport-switch" role="group" aria-label="Tamaño de previsualización">
+                    <button type="button" class="viewport-button is-active" data-viewport="desktop" aria-pressed="true">Escritorio</button>
+                    <button type="button" class="viewport-button" data-viewport="mobile" aria-pressed="false">Móvil</button>
+                  </div>
+                  <button class="icon-button" id="refresh-preview" type="button" aria-label="Generar de nuevo la vista previa" title="Generar de nuevo con Eleventy">↻</button>
+                </div>
+              </div>
+              <div class="preview-meta"><span class="preview-dot"></span><span id="preview-message">Vista del sitio generado; selecciona una zona para editar.</span><span id="selected-label">Sin selección</span></div>
+              <div class="preview-stage" id="preview-stage">
+                <iframe id="site-preview" title="Vista previa real de la portada" src="http://127.0.0.1:3002/" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+              </div>
+              <p class="preview-caption">La vista previa usa el HTML real de Eleventy en un directorio temporal. La generación no modifica <code>dist</code>.</p>
+            </section>
+
+            <aside class="inspector panel" aria-labelledby="inspector-title">
+              <div class="inspector-heading"><div><p class="eyebrow">Propiedades</p><h2 id="inspector-title">Hero</h2></div><span id="selection-state">Selecciona un componente</span></div>
+              <div class="inspector-empty" id="inspector-empty"><span class="selection-symbol" aria-hidden="true">＋</span><p>Haz clic en el título, la descripción o el fondo del hero para seleccionarlo en contexto.</p></div>
+              <form id="homepage-form" autocomplete="off">
+                <fieldset class="property-group">
+                  <legend>Contenido</legend>
+                  <label for="hero-kicker">Línea editorial</label><input id="hero-kicker" data-field="hero.kicker" maxlength="100">
+                  <div class="field-pair"><div><label for="hero-title-first">Título, línea 1</label><input id="hero-title-first" data-field="hero.titleFirst" maxlength="40"></div><div><label for="hero-title-second">Título, línea 2</label><input id="hero-title-second" data-field="hero.titleSecond" maxlength="40"></div></div>
+                  <label for="hero-description">Descripción</label><textarea id="hero-description" data-field="hero.description" rows="4" maxlength="320"></textarea>
+                </fieldset>
+                <fieldset class="property-group">
+                  <legend>Composición</legend>
+                  <label>Alineación</label><div class="segmented-control" role="group" aria-label="Alineación del hero">
+                    <button type="button" data-alignment="left" aria-pressed="false">Izquierda</button><button type="button" data-alignment="center" aria-pressed="false">Centro</button><button type="button" data-alignment="right" aria-pressed="false">Derecha</button>
+                  </div>
+                  <label class="range-label" for="hero-height">Altura mínima <output data-output="hero.height">58 vh</output></label><input id="hero-height" data-field="hero.height" type="range" min="38" max="92" step="1">
+                </fieldset>
+                <fieldset class="property-group">
+                  <legend>Color y fondo</legend>
+                  <div class="color-grid"><label for="hero-bg-start">Inicio del degradado<input id="hero-bg-start" data-field="hero.backgroundStart" type="color"></label><label for="hero-bg-end">Final del degradado<input id="hero-bg-end" data-field="hero.backgroundEnd" type="color"></label><label for="hero-accent">Acento<input id="hero-accent" data-field="hero.accent" type="color"></label></div>
+                  <label class="range-label" for="hero-angle">Ángulo del degradado <output data-output="hero.gradientAngle">135°</output></label><input id="hero-angle" data-field="hero.gradientAngle" type="range" min="0" max="360" step="1">
+                </fieldset>
+                <fieldset class="property-group media-group">
+                  <legend>Imagen del hero</legend>
+                  <label for="media-search">Recursos disponibles</label><input id="media-search" type="search" placeholder="Buscar imagen por nombre">
+                  <label for="media-select">Biblioteca local</label><select id="media-select"><option value="">Sin imagen</option></select>
+                  <label for="media-upload" class="upload-control">Subir imagen desde el ordenador</label><input id="media-upload" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+                  <p class="field-hint">PNG, JPEG, WebP, GIF o AVIF. Máximo 10 MB. Los recursos nuevos quedan locales como borrador.</p>
+                  <label for="hero-image-alt">Texto alternativo</label><input id="hero-image-alt" data-field="hero.image.alt" maxlength="200">
+                  <div class="field-pair"><div><label class="range-label" for="hero-image-x">Encuadre horizontal <output data-output="hero.image.positionX">50%</output></label><input id="hero-image-x" data-field="hero.image.positionX" type="range" min="0" max="100"></div><div><label class="range-label" for="hero-image-y">Encuadre vertical <output data-output="hero.image.positionY">50%</output></label><input id="hero-image-y" data-field="hero.image.positionY" type="range" min="0" max="100"></div></div>
+                  <label class="range-label" for="hero-image-zoom">Zoom <output data-output="hero.image.zoom">100%</output></label><input id="hero-image-zoom" data-field="hero.image.zoom" type="range" min="100" max="180">
+                  <label class="range-label" for="hero-image-overlay">Superposición <output data-output="hero.image.overlay">52%</output></label><input id="hero-image-overlay" data-field="hero.image.overlay" type="range" min="0" max="85">
+                </fieldset>
+              </form>
+            </aside>
+          </div>
+          <section class="conflict-panel panel" id="conflict-panel" hidden aria-labelledby="conflict-title">
+            <p class="eyebrow">Cambio externo detectado</p><h2 id="conflict-title">El archivo cambió fuera del Studio</h2><p id="conflict-summary">No se sobrescribió ninguna versión.</p>
+            <ul class="conflict-diff" id="external-diff"></ul>
+            <div class="conflict-actions"><button class="button button-quiet" id="reload-external" type="button">Usar la versión actual del archivo</button><button class="button button-primary" id="reapply-local" type="button">Revisar y volver a guardar mis cambios</button></div>
+          </section>
+        </section>
+
+        <footer class="studio-footer"><span>ArkFates Desiré</span><span>Entorno editorial local · No publica ni despliega</span></footer>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

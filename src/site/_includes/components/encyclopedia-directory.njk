@@ -1,0 +1,12 @@
+<div class="encyclopedia-directory">
+  <p class="editorial-intro">Explora las categorías del universo de ArkFates Desiré. Las fichas se incorporarán a medida que su información esté autorizada para publicación.</p>
+  <nav class="encyclopedia-category-list" aria-label="Categorías de la enciclopedia">
+    {% for category in encyclopediaCategories %}
+    <a class="encyclopedia-category-link" href="{{ category.url }}">
+      <span>{{ category.title }}</span>
+      <span class="encyclopedia-category-rule" aria-hidden="true"></span>
+      <span class="encyclopedia-category-open">Abrir categoría</span>
+    </a>
+    {% endfor %}
+  </nav>
+</div>

@@ -717,7 +717,7 @@ function callGlobalFunction(name, args) {
 			return d;
 		}
 		case "date": {
-			const d = new Date(args[0]);
+			const d = coerceDate(args[0]) || new Date(args[0]);
 			return isNaN(d.getTime()) ? undefined : d;
 		}
 		case "if":

@@ -19,7 +19,9 @@ const fs = require("fs");
 const path = require("path");
 
 const PLUGINS_ROOT = "src/plugins";
-const OUTPUT_ROOT = "dist";
+const OUTPUT_ROOT = process.env.ARKFATES_STUDIO_PREVIEW === "1"
+  ? ".arkfates-studio/preview"
+  : "dist";
 // Generated (gitignored): slot templates are copied here so they can be
 // rendered with a plain {% include %} and receive the full data cascade.
 const INCLUDES_ROOT = "src/site/_includes/plugins";

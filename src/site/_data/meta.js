@@ -44,6 +44,21 @@ module.exports = async (data) => {
   const styleSettingsCss = process.env.STYLE_SETTINGS_CSS || "";
   const styleSettingsBodyClasses = process.env.STYLE_SETTINGS_BODY_CLASSES || "";
 
+  let discordInviteUrl = "";
+  try {
+    const inviteUrl = new URL(process.env.DISCORD_INVITE_URL || "");
+    if (
+      inviteUrl.protocol === "https:" &&
+      ["discord.gg", "www.discord.gg", "discord.com", "www.discord.com"].includes(
+        inviteUrl.hostname
+      )
+    ) {
+      discordInviteUrl = inviteUrl.toString();
+    }
+  } catch {
+    // Keep the community action unavailable until a valid invite is configured.
+  }
+
   if (process.env.NOTE_ICON_TITLE && process.env.NOTE_ICON_TITLE == "true") {
     bodyClasses.push("title-note-icon");
     noteIconsSettings.title = true;
@@ -115,7 +130,8 @@ module.exports = async (data) => {
     noteIconsSettings,
     timestampSettings,
     baseTheme: process.env.BASE_THEME || "dark",
-    siteName: process.env.SITE_NAME_HEADER || "Digital Garden",
+    siteName: process.env.SITE_NAME_HEADER || "ArkFates Desiré",
+    discordInviteUrl,
     siteLogoPath: logoPath,
     logoHeight,
     mainLanguage: process.env.SITE_MAIN_LANGUAGE || "en",
@@ -123,6 +139,8 @@ module.exports = async (data) => {
     styleSettingsCss,
     uiStrings,
     buildDate: new Date(),
+    studioPreview: process.env.ARKFATES_STUDIO_PREVIEW === "1",
+    studioPort: process.env.ARKFATES_STUDIO_PORT || "3001",
   };
 
   return meta;

@@ -1,0 +1,98 @@
+<div class="arkfates-homepage">
+
+<header
+  class="af-hero{% if homepage.hero.imageUrl %} has-media{% endif %}"
+  aria-labelledby="af-title"
+  data-studio-component="hero"
+  data-studio-alignment="{{ homepage.hero.alignment }}"
+  style="--af-hero-height: {{ homepage.hero.height }}vh; --af-hero-gradient-angle: {{ homepage.hero.gradientAngle }}deg; --af-hero-gradient-start: {{ homepage.hero.backgroundStart }}; --af-hero-gradient-end: {{ homepage.hero.backgroundEnd }}; --af-hero-accent: {{ homepage.hero.accent }}; --af-hero-image-x: {{ homepage.hero.image.positionX }}%; --af-hero-image-y: {{ homepage.hero.image.positionY }}%; --af-hero-image-zoom: {{ homepage.hero.image.zoom }}%; --af-hero-image-overlay: {{ homepage.hero.imageOverlayRatio }};"
+>
+  <div class="af-hero-visual" data-studio-component="hero-image">
+    <img class="af-hero-media" data-studio-image{% if homepage.hero.imageUrl %} src="{{ homepage.hero.imageUrl | escape }}" alt="{{ homepage.hero.image.alt | escape }}"{% else %} hidden alt=""{% endif %}>
+    <span class="af-hero-overlay" aria-hidden="true"></span>
+  </div>
+  <p class="af-kicker" data-studio-component="kicker">{{ homepage.hero.kicker | escape }}</p>
+  <h1 id="af-title" data-studio-component="title"><span data-studio-line="first">{{ homepage.hero.titleFirst | escape }}</span><br><span data-studio-line="second">{{ homepage.hero.titleSecond | escape }}</span></h1>
+  <p class="af-hero-copy" data-studio-component="description">{{ homepage.hero.description | escape }}</p>
+  <p class="af-byline">Una obra de <strong>Krozzii</strong></p>
+  <div class="af-hero-actions">
+    <a class="af-action af-action-primary" href="/biblioteca/">Entrar a la biblioteca</a>
+    <a class="af-action" href="/enciclopedia/">Consultar la enciclopedia</a>
+  </div>
+</header>
+
+<section class="af-introduction" aria-labelledby="af-introduction-title">
+  <p class="af-section-index">El universo</p>
+  <div>
+    <h2 id="af-introduction-title">Una obra. Un universo por descubrir.</h2>
+    <p>ArkFates Desiré reúne una historia original y el archivo de conocimiento que crece junto a ella. Esta plataforma es su punto de encuentro oficial: aquí se publicarán los relatos y la información autorizada de su universo.</p>
+  </div>
+</section>
+
+<section class="af-pillars" aria-label="Explorar ArkFates Desiré">
+  <article class="af-pillar">
+    <p class="af-section-index">Lectura</p>
+    <h2>Biblioteca</h2>
+    <p>Los relatos publicados de ArkFates Desiré tendrán aquí su lugar.</p>
+    <a class="af-text-link" href="/biblioteca/">Ir a la biblioteca</a>
+  </article>
+  <article class="af-pillar">
+    <p class="af-section-index">Consulta</p>
+    <h2>Enciclopedia</h2>
+    <p>Un archivo para explorar el universo conforme su información se incorpore y autorice.</p>
+    <a class="af-text-link" href="/enciclopedia/">Explorar categorías</a>
+  </article>
+</section>
+
+<section class="af-listing" aria-labelledby="af-chapters-title">
+  <div class="af-section-heading">
+    <div>
+      <p class="af-section-index">Biblioteca</p>
+      <h2 id="af-chapters-title">Capítulos recientes</h2>
+    </div>
+    <span class="af-empty-mark" aria-hidden="true"></span>
+  </div>
+  <p class="af-empty-state">Los capítulos publicados se presentarán en la <a href="/biblioteca/">biblioteca</a>.</p>
+</section>
+
+<section class="af-listing" aria-labelledby="af-news-title">
+  <div class="af-section-heading">
+    <div>
+      <p class="af-section-index">Desde el archivo</p>
+      <h2 id="af-news-title">Novedades</h2>
+    </div>
+    <span class="af-empty-mark" aria-hidden="true"></span>
+  </div>
+  <p class="af-empty-state">Consulta las <a href="/novedades/">novedades oficiales</a> del proyecto.</p>
+</section>
+
+<section class="af-featured" aria-labelledby="af-featured-title">
+  <p class="af-section-index">Obras y contenidos</p>
+  <h2 id="af-featured-title">Un universo en expansión.</h2>
+  <p>Las obras y publicaciones oficiales se presentarán aquí a medida que estén disponibles.</p>
+  <a class="af-text-link" href="/biblioteca/">Explorar la biblioteca</a>
+</section>
+
+<section class="af-community" aria-labelledby="af-community-title">
+  <div>
+    <p class="af-section-index">Comunidad</p>
+    <h2 id="af-community-title">Alrededor de ArkFates Desiré.</h2>
+    <p>La comunidad oficial se organizará en Discord.</p>
+  </div>
+  <a class="af-action" href="/comunidad/">Conocer la comunidad</a>
+</section>
+
+<section class="af-about" aria-labelledby="af-about-title">
+  <p class="af-section-index">Acerca de</p>
+  <h2 id="af-about-title">ArkFates Desiré</h2>
+  <p>Una obra original creada por <strong>Krozzii</strong>. Este sitio reúne su presentación, sus relatos y el conocimiento autorizado de su universo.</p>
+  <a class="af-text-link" href="/acerca/">Acerca del proyecto</a>
+</section>
+
+<footer class="af-footer">
+  <a href="/" aria-label="ArkFates Desiré, inicio">ArkFates Desiré</a>
+  <span>Creada por Krozzii</span>
+  <span>Todos los derechos reservados.</span>
+</footer>
+
+</div>

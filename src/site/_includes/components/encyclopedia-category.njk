@@ -1,0 +1,16 @@
+{% set entries = collections.note | encyclopediaEntries(encyclopediaCategory) %}
+<div class="encyclopedia-category">
+  <p class="editorial-intro">Fichas publicadas en la categoría {{ title }}.</p>
+  {% if entries.length %}
+  <div class="encyclopedia-entry-list">
+    {% for entry in entries %}
+    <article class="encyclopedia-entry-row">
+      <h2><a href="{{ entry.url }}">{{ entry.data.title or entry.fileSlug }}</a></h2>
+      {% if entry.data.description %}<p>{{ entry.data.description }}</p>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="encyclopedia-empty">Aún no hay fichas autorizadas para esta categoría.</p>
+  {% endif %}
+</div>

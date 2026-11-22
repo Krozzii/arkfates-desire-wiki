@@ -1,0 +1,29 @@
+{% set hasDetails = identity or description or history or characteristics or abilities or transformations or relationships or appearances or (content | trim) %}
+<article class="encyclopedia-entry">
+  {% if hasDetails %}
+    {% if identity %}<section class="encyclopedia-field"><h2>Identidad</h2><p>{{ identity }}</p></section>{% endif %}
+    {% if description %}<section class="encyclopedia-field"><h2>Descripción</h2><p>{{ description }}</p></section>{% endif %}
+    {% if history %}<section class="encyclopedia-field"><h2>Historia</h2><p>{{ history }}</p></section>{% endif %}
+    {% if characteristics %}<section class="encyclopedia-field"><h2>Características</h2><p>{{ characteristics }}</p></section>{% endif %}
+    {% if abilities %}<section class="encyclopedia-field"><h2>Habilidades</h2><p>{{ abilities }}</p></section>{% endif %}
+    {% if transformations %}<section class="encyclopedia-field"><h2>Transformaciones</h2><p>{{ transformations }}</p></section>{% endif %}
+    {% if relationships %}<section class="encyclopedia-field"><h2>Relaciones</h2><p>{{ relationships }}</p></section>{% endif %}
+    {% if appearances %}<section class="encyclopedia-field"><h2>Apariciones</h2><p>{{ appearances }}</p></section>{% endif %}
+    {% if content | trim %}
+    <section class="encyclopedia-entry-prose">{{ content | hideDataview | taggify | link | resolveMdLinks | safe }}</section>
+    {% endif %}
+  {% else %}
+  <p class="encyclopedia-empty">Esta ficha todavía no contiene información autorizada para publicar.</p>
+  {% endif %}
+
+  {% if relatedReferences and relatedReferences.length %}
+  <section class="encyclopedia-references" aria-labelledby="encyclopedia-references-title">
+    <h2 id="encyclopedia-references-title">Referencias relacionadas</h2>
+    <ul>
+      {% for reference in relatedReferences %}
+      <li><a href="{{ reference.url }}">{{ reference.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</article>

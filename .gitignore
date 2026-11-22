@@ -12,4 +12,7 @@ src/site/_includes/plugins/
 .vercel
 .cache
 _site/
+.arkfates-studio/state/
+.arkfates-studio/media/
+.arkfates-studio/preview/
 **/.DS_Store

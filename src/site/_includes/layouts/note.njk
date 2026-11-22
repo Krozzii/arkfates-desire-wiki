@@ -2,7 +2,7 @@
 permalink: "notes/{{ page.fileSlug | slugify }}/"
 ---
 <!DOCTYPE html>
-<html lang="{{ meta.mainLanguage }}" style="color-scheme: only {{ meta.baseTheme }}">
+<html lang="{{ meta.mainLanguage }}" data-theme="dark" data-theme-preference="dark">
   <head>
     <title>{% if title %}{{ title }}{% else %}{{ page.fileSlug }}{% endif %}</title>
     {%include "components/pageheader.njk"%}
@@ -15,7 +15,7 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
       {% include imp %}
     {% endfor %}
   </head>
-  <body class="theme-{{meta.baseTheme}} markdown-preview-view markdown-rendered markdown-preview-section {% if settings.dgShowFileTree !== true %}no-filetree{% endif %} {% if settings.dgHomeLink === true and settings.dgShowFileTree !== true %}has-navbar{% endif %} {{meta.bodyClasses}}">
+  <body class="theme-{{meta.baseTheme}} markdown-preview-view markdown-rendered markdown-preview-section {% if page.url == '/' %}arkfates-home{% endif %} {% if editorialType %}arkfates-editorial{% endif %} {% if libraryType %}library-page library-page-{{ libraryType }}{% endif %} {% if settings.dgShowFileTree !== true %}no-filetree{% endif %} {% if settings.dgHomeLink === true and settings.dgShowFileTree !== true %}has-navbar{% endif %} {{meta.bodyClasses}}">
     {%include "components/notegrowthhistory.njk"%}
 
     {% set regionName = "navigation" %}
@@ -23,8 +23,47 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
     {% include "components/pluginRegion.njk" %}
 
     <main class="content cm-s-obsidian print {{contentClasses}}">
+      {% if libraryType %}
+      <nav class="editorial-breadcrumbs library-breadcrumbs" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="/biblioteca/">Biblioteca</a>
+        {% if libraryType == "volume" or libraryType == "chapter" %}
+          {% set libraryWork = collections.library.works | libraryById(libraryWorkId) %}
+          <span aria-hidden="true">/</span>
+          <a href="{{ libraryWork.url }}">{{ libraryWork.data.title }}</a>
+        {% endif %}
+        {% if libraryType == "chapter" %}
+          {% set libraryVolume = collections.library.volumes | libraryById(libraryVolumeId) %}
+          <span aria-hidden="true">/</span>
+          <a href="{{ libraryVolume.url }}">{{ libraryVolume.data.title }}</a>
+        {% endif %}
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ title }}</span>
+      </nav>
+      {% elif editorialType %}
+      <nav class="editorial-breadcrumbs" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        {% if editorialType == "encyclopediaDirectory" %}
+          <span aria-current="page">Enciclopedia</span>
+        {% elif editorialType == "encyclopediaCategory" %}
+          <a href="/enciclopedia/">Enciclopedia</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{{ title }}</span>
+        {% elif editorialType == "encyclopediaEntry" %}
+          <a href="/enciclopedia/">Enciclopedia</a>
+          <span aria-hidden="true">/</span>
+          <a href="/enciclopedia/{{ encyclopediaCategory }}/">{{ encyclopediaCategoryTitle }}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{{ title }}</span>
+        {% else %}
+          <span aria-current="page">{{ title }}</span>
+        {% endif %}
+      </nav>
+      {% endif %}
       <header>
-        {% if settings.dgShowInlineTitle === true %}
+        {% if settings.dgShowInlineTitle === true and not libraryType %}
           <h1 data-note-icon="{% if noteIcon %}{{noteIcon}}{% else %}{{meta.noteIconsSettings.default}}{% endif %}">{% if title %}{{ title }}{% else %}{{ page.fileSlug }}{% endif %}</h1>
         {% endif %}
         <div class="header-meta">
@@ -57,7 +96,23 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
       {% for imp in dynamics.notes.beforeContent %}
         {% include imp %}
       {% endfor %}
-      {{ content | hideDataview | taggify | link | resolveMdLinks | safe}}
+      {% if libraryType == "work" %}
+        {% include "components/library-work.njk" %}
+      {% elif libraryType == "volume" %}
+        {% include "components/library-volume.njk" %}
+      {% elif libraryType == "chapter" %}
+        {% include "components/library-reader.njk" %}
+      {% elif editorialType == "encyclopediaDirectory" %}
+        {% include "components/encyclopedia-directory.njk" %}
+      {% elif editorialType == "encyclopediaCategory" %}
+        {% include "components/encyclopedia-category.njk" %}
+      {% elif editorialType == "encyclopediaEntry" %}
+        {% include "components/encyclopedia-entry.njk" %}
+      {% elif editorialType == "landing" %}
+        {% include "components/editorial-landing.njk" %}
+      {% else %}
+        {{ content | hideDataview | taggify | link | resolveMdLinks | safe}}
+      {% endif %}
       {% set slotName = "common.afterContent" %}{% include "components/pluginSlot.njk" %}
       {% set slotName = "notes.afterContent" %}{% include "components/pluginSlot.njk" %}
       {% for imp in dynamics.common.afterContent %}

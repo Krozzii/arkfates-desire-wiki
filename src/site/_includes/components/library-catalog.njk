@@ -1,0 +1,43 @@
+<section class="library-catalog" aria-labelledby="library-catalog-title">
+  <header class="library-catalog-heading">
+    <p class="library-eyebrow">El catálogo de Krozzii</p>
+    <p class="library-catalog-intro">Obras para leer en su orden de publicación.</p>
+  </header>
+
+  {% if collections.library.works.length %}
+  <div class="library-work-list">
+    {% for work in collections.library.works %}
+      {% set volumes = collections.library.volumes | libraryVolumesFor(work.data.libraryId) %}
+      <article class="library-work-row{% if work.data.libraryCover %} has-cover{% endif %}">
+        {% if work.data.libraryCover %}
+        <a class="library-cover-link" href="{{ work.url }}" tabindex="-1" aria-hidden="true">
+          <img class="library-cover" src="{{ work.data.libraryCover }}" alt="{{ work.data.libraryCoverAlt or ('Portada de ' + work.data.title) }}" loading="lazy" decoding="async">
+        </a>
+        {% endif %}
+        <div class="library-work-summary">
+          <p class="library-byline">{{ work.data.libraryAuthor or "Krozzii" }}</p>
+          <h2><a href="{{ work.url }}">{{ work.data.title }}</a></h2>
+          {% if work.data.libraryDescription %}<p class="library-description">{{ work.data.libraryDescription }}</p>{% endif %}
+          <div class="library-work-details">
+            {% if work.data.libraryStatus %}<span>{{ work.data.libraryStatus | capitalize }}</span>{% endif %}
+            {% if volumes.length %}<span>{% if volumes.length == 1 %}1 volumen{% else %}{{ volumes.length }} volúmenes{% endif %}</span>{% endif %}
+          </div>
+          {% if work.data.libraryGenres and work.data.libraryGenres.length %}
+          <ul class="library-taxonomy" aria-label="Géneros">
+            {% for genre in work.data.libraryGenres %}<li>{{ genre }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+          {% if work.data.libraryTags and work.data.libraryTags.length %}
+          <ul class="library-taxonomy" aria-label="Etiquetas">
+            {% for tag in work.data.libraryTags %}<li>{{ tag }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+          <a class="library-text-link" href="{{ work.url }}">Ver obra</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="library-empty">Aún no hay obras publicadas en la biblioteca.</p>
+  {% endif %}
+</section>

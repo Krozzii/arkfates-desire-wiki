@@ -2,6 +2,7 @@ require("dotenv").config();
 const settings = require("../../helpers/constants");
 const { pickNoteMetadata } = require("../../helpers/bases-engine/noteMetadata");
 const pluginLoader = require("../../helpers/pluginLoader");
+const { libraryPermalink } = require("../../helpers/library");
 
 // Core note settings plus any per-note flags declared by enabled plugins
 // (manifest "noteSettings"). Same resolution for both: per-note frontmatter
@@ -23,6 +24,8 @@ module.exports = {
       if (data.tags.indexOf("gardenEntry") != -1) {
         return "/";
       }
+      const libraryRoute = libraryPermalink(data);
+      if (libraryRoute) return libraryRoute;
       return data.permalink || undefined;
     },
     basesNotes: (data) => {

@@ -1,10 +1,12 @@
-<div class="editorial-global-nav" role="navigation" aria-label="Navegación principal">
-  <a href="/"{% if page.url == '/' %} aria-current="page"{% endif %}>Inicio</a>
-  <a href="/enciclopedia/"{% if page.url and page.url.indexOf('/enciclopedia/') == 0 %} aria-current="page"{% endif %}>Enciclopedia</a>
-  <a href="/biblioteca/"{% if page.url and page.url.indexOf('/biblioteca/') == 0 %} aria-current="page"{% endif %}>Biblioteca</a>
-  <a href="/novedades/"{% if page.url and page.url.indexOf('/novedades/') == 0 %} aria-current="page"{% endif %}>Novedades</a>
-  <a href="/comunidad/"{% if page.url and page.url.indexOf('/comunidad/') == 0 %} aria-current="page"{% endif %}>Comunidad</a>
-  <a href="/acerca/"{% if page.url and page.url.indexOf('/acerca/') == 0 %} aria-current="page"{% endif %}>Acerca de</a>
+<nav class="editorial-global-nav" aria-label="Navegación principal">
+  <div class="editorial-nav-links">
+    <a href="/"{% if page.url == '/' %} aria-current="page"{% endif %}>Inicio</a>
+    <a href="/enciclopedia/"{% if page.url and page.url.indexOf('/enciclopedia/') == 0 %} aria-current="page"{% endif %}>Enciclopedia</a>
+    <a href="/biblioteca/"{% if page.url and page.url.indexOf('/biblioteca/') == 0 %} aria-current="page"{% endif %}>Biblioteca</a>
+    <a href="/novedades/"{% if page.url and page.url.indexOf('/novedades/') == 0 %} aria-current="page"{% endif %}>Novedades</a>
+    <a href="/comunidad/"{% if page.url and page.url.indexOf('/comunidad/') == 0 %} aria-current="page"{% endif %}>Comunidad</a>
+    <a href="/acerca/"{% if page.url and page.url.indexOf('/acerca/') == 0 %} aria-current="page"{% endif %}>Acerca de</a>
+  </div>
   <div class="appearance-control">
     <i data-lucide="sun-moon" aria-hidden="true"></i>
     <label class="appearance-control-label">
@@ -16,4 +18,4 @@
       </select>
     </label>
   </div>
-</div>
+</nav>

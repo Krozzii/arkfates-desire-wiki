@@ -556,6 +556,28 @@ module.exports = function(eleventyConfig) {
     buildLibraryCollections(collectionApi.getFilteredByTag("note")),
   );
 
+  // Public news articles are ordinary Markdown notes. The publication guard
+  // remains the single source of truth; drafts never enter this collection.
+  eleventyConfig.addCollection("news", (collectionApi) =>
+    collectionApi
+      .getFilteredByTag("note")
+      .filter(
+        (note) =>
+          note.data &&
+          note.data["dg-publish"] === true &&
+          note.data.hide !== true &&
+          note.data.editorialType === "newsArticle",
+      )
+      .sort((a, b) => {
+        const dateValue = (note) => {
+          const value = note.data.newsPublishedAt;
+          const timestamp = value instanceof Date ? value.getTime() : Date.parse(value || "");
+          return Number.isNaN(timestamp) ? 0 : timestamp;
+        };
+        return dateValue(b) - dateValue(a) || String(b.data.title).localeCompare(String(a.data.title), "es");
+      }),
+  );
+
   eleventyConfig.addFilter("isoDate", function(date) {
     return date && date.toISOString();
   });

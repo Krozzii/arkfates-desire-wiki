@@ -1,8 +1,11 @@
 {% if settings.dgEnableSearch === true %}
-<div class="search-container" id="globalsearch" onclick="toggleSearch()">
-    <div class="search-box" onclick="event.stopPropagation()">
+<div class="search-container" id="globalsearch" aria-hidden="true" onclick="toggleSearch(false)">
+    <section class="search-box" role="dialog" aria-modal="true" aria-labelledby="global-search-title" onclick="event.stopPropagation()">
+        <h2 class="visually-hidden" id="global-search-title">Buscar en ArkFates Desiré</h2>
         <div class="search-header">
-            <input type="search" id="term" placeholder="{{ meta.uiStrings.searchPlaceholder }}">
+            <label class="visually-hidden" for="term">{{ meta.uiStrings.searchPlaceholder }}</label>
+            <input type="search" id="term" placeholder="{{ meta.uiStrings.searchPlaceholder }}" autocomplete="off" aria-controls="search-results">
+            <button type="button" class="search-close" aria-label="Cerrar búsqueda" onclick="event.stopPropagation(); toggleSearch(false)"><i data-lucide="x" aria-hidden="true"></i></button>
         </div>
 
         <div class="search-layout no-preview" id="search-layout">
@@ -35,7 +38,7 @@
                 <span><code>{{ meta.uiStrings.searchCloseHotkey }}</code>&nbsp;{{ meta.uiStrings.searchCloseHint }}</span>
             </div>
         </footer>
-    </div>
+    </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/flexsearch@0.7.21/dist/flexsearch.bundle.js"></script>
 <script>
@@ -45,13 +48,27 @@
     // Preview content cache
     const previewCache = new Map();
 
-    window.toggleSearch = function () {
+    let searchInvoker = null;
+
+    window.toggleSearch = function (forceOpen) {
         const searchContainer = document.getElementById('globalsearch');
-        if (searchContainer.classList.contains('active')) {
+        const isOpen = searchContainer.classList.contains('active');
+        const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !isOpen;
+        if (shouldOpen === isOpen) return;
+
+        if (!shouldOpen) {
             searchContainer.classList.remove('active');
+            searchContainer.setAttribute('aria-hidden', 'true');
+            document.querySelectorAll('[aria-controls="globalsearch"]').forEach(button => button.setAttribute('aria-expanded', 'false'));
+            document.body.classList.remove('search-open');
+            if (searchInvoker && typeof searchInvoker.focus === 'function') searchInvoker.focus();
         } else {
+            searchInvoker = document.activeElement;
             searchContainer.classList.add('active');
-            document.getElementById('term').focus();
+            searchContainer.setAttribute('aria-hidden', 'false');
+            document.querySelectorAll('[aria-controls="globalsearch"]').forEach(button => button.setAttribute('aria-expanded', 'true'));
+            document.body.classList.add('search-open');
+            requestAnimationFrame(() => document.getElementById('term').focus());
         }
     }
 
@@ -59,7 +76,6 @@
         const term = evt.textContent;
         if (term) {
             document.getElementById('term').value = term.trim();
-            window.toggleSearch();
             window.search();
         }
     }
@@ -235,10 +251,14 @@
         if (!previewPanel || !previewContent) return;
 
         // Update active state on results
-        document.querySelectorAll('.searchresult').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.searchresult').forEach(el => {
+            el.classList.remove('active');
+            el.removeAttribute('aria-current');
+        });
         const activeResult = document.querySelector(`.searchresult[data-index="${index}"]`);
         if (activeResult) {
             activeResult.classList.add('active');
+            activeResult.setAttribute('aria-current', 'true');
         }
 
         // Show loading state in preview
@@ -329,8 +349,9 @@
                 e.preventDefault();
                 toggleSearch();
             }
-            if (e.key === 'Escape') {
-                document.getElementById('globalsearch').classList.remove('active');
+            const searchContainer = document.getElementById('globalsearch');
+            if (e.key === 'Escape' && searchContainer.classList.contains('active')) {
+                toggleSearch(false);
             }
 
             // Navigate search results with arrow keys
@@ -343,12 +364,25 @@
                     e.preventDefault();
                     navigateResults(-1);
                 }
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && e.target === field) {
                     e.preventDefault();
                     const active = document.querySelector('.searchresult.active');
                     if (active) {
-                        const url = active.dataset.url;
+                        const url = active.getAttribute('href');
                         if (url) window.location.href = url;
+                    }
+                }
+                if (e.key === 'Tab') {
+                    const focusable = [...searchContainer.querySelectorAll('button:not(:disabled), input:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])')]
+                        .filter(element => element.getClientRects().length > 0);
+                    if (focusable.length) {
+                        const first = focusable[0];
+                        const last = focusable[focusable.length - 1];
+                        if (e.shiftKey && (document.activeElement === first || !searchContainer.contains(document.activeElement))) {
+                            e.preventDefault(); last.focus();
+                        } else if (!e.shiftKey && document.activeElement === last) {
+                            e.preventDefault(); first.focus();
+                        }
                     }
                 }
             }
@@ -374,8 +408,6 @@
                 if (newIndex >= results.length) newIndex = 0;
             }
 
-            results.forEach(el => el.classList.remove('active'));
-            results[newIndex].classList.add('active');
             results[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             // Sync preview with selection
@@ -455,15 +487,14 @@
                 : '';
 
             resultsHTML += `
-                <div class="searchresult${index === 0 ? ' active' : ''}"
+                <a class="searchresult${index === 0 ? ' active' : ''}" href="${r.url}"${index === 0 ? ' aria-current="true"' : ''}
                      data-index="${index}"
-                     data-url="${r.url}"
                      onmouseenter="showPreview(${index})"
-                     onclick="window.location.href='${r.url}'">
+                     onfocus="showPreview(${index})">
                     <span class="result-title">${highlightedTitle}</span>
                     ${tagsHTML}
                     <div class="result-excerpt">${highlightedExcerpt}</div>
-                </div>
+                </a>
             `;
         });
 

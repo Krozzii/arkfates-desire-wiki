@@ -14,11 +14,12 @@
     {% if meta.studioPreview %}<script defer src="http://127.0.0.1:{{ meta.studioPort }}/__studio/preview-bridge.js"></script>{% endif %}
   </head>
   <body class="theme-{{meta.baseTheme}} markdown-preview-view markdown-rendered markdown-preview-section {% if page.url == '/' %}arkfates-home{% endif %} {% if settings.dgShowFileTree !== true %}no-filetree{% endif %} {% if settings.dgHomeLink === true and settings.dgShowFileTree !== true %}has-navbar{% endif %} {{meta.bodyClasses}}">
+    <a class="public-skip-link" href="#main-content">Saltar al contenido</a>
     {%include "components/notegrowthhistory.njk"%}
     {% set regionName = "navigation" %}
     {% set regionFallback = "components/navbar.njk" %}
     {% include "components/pluginRegion.njk" %}
-    <main class="content cm-s-obsidian print {{contentClasses}}">
+    <main id="main-content" class="content cm-s-obsidian print {{contentClasses}}">
       <header>
       {% if settings.dgShowInlineTitle === true %}
         {% if page.url != '/' or isFallbackIndex %}

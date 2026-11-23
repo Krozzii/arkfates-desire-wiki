@@ -1,11 +1,18 @@
 <div class="encyclopedia-directory">
-  <p class="editorial-intro">Explora las categorías del universo de ArkFates Desiré. Las fichas se incorporarán a medida que su información esté autorizada para publicación.</p>
+  <div class="encyclopedia-directory-intro">
+    <p class="editorial-intro">Explora la información autorizada del universo de ArkFates Desiré. Cada categoría reúne únicamente las fichas que ya están publicadas.</p>
+    <a class="encyclopedia-directory-all" href="/biblioteca/">Explorar la biblioteca <span aria-hidden="true">↗</span></a>
+  </div>
   <nav class="encyclopedia-category-list" aria-label="Categorías de la enciclopedia">
     {% for category in encyclopediaCategories %}
-    <a class="encyclopedia-category-link" href="{{ category.url }}">
-      <span>{{ category.title }}</span>
-      <span class="encyclopedia-category-rule" aria-hidden="true"></span>
-      <span class="encyclopedia-category-open">Abrir categoría</span>
+    {% set categoryEntries = collections.note | encyclopediaEntries(category.slug) %}
+    <a class="encyclopedia-category-link{% if categoryEntries.length %} has-published-entries{% endif %}" href="{{ category.url }}">
+      <span class="encyclopedia-category-index" aria-hidden="true">{{ loop.index }}</span>
+      <span class="encyclopedia-category-copy">
+        <strong>{{ category.title }}</strong>
+        <small>{% if categoryEntries.length == 1 %}1 ficha publicada{% elif categoryEntries.length > 1 %}{{ categoryEntries.length }} fichas publicadas{% else %}Sin fichas públicas{% endif %}</small>
+      </span>
+      <span class="encyclopedia-category-open" aria-hidden="true">↗</span>
     </a>
     {% endfor %}
   </nav>

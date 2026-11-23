@@ -1,16 +1,38 @@
 {% set entries = collections.note | encyclopediaEntries(encyclopediaCategory) %}
 <div class="encyclopedia-category">
-  <p class="editorial-intro">Fichas publicadas en la categoría {{ title }}.</p>
+  <div class="encyclopedia-category-intro">
+    <p class="editorial-intro">Fichas autorizadas para consulta en {{ title }}.</p>
+    <a class="encyclopedia-back-link" href="/enciclopedia/">← Todas las categorías</a>
+  </div>
   {% if entries.length %}
   <div class="encyclopedia-entry-list">
     {% for entry in entries %}
-    <article class="encyclopedia-entry-row">
-      <h2><a href="{{ entry.url }}">{{ entry.data.title or entry.fileSlug }}</a></h2>
-      {% if entry.data.description %}<p>{{ entry.data.description }}</p>{% endif %}
+    <article class="encyclopedia-entry-card encyclopedia-entry-card--{{ entry.data.encyclopediaCategory }}">
+      {% if entry.data.encyclopediaCategory == "personajes" %}
+      <div class="encyclopedia-entry-card__portrait" aria-hidden="true">
+        {% if entry.data.characterImage or entry.data.portrait %}
+          <img src="{{ (entry.data.characterImage or entry.data.portrait) | escape }}" alt="" loading="lazy">
+        {% else %}
+          <span>{{ entry.data.title or entry.fileSlug }}</span>
+          <small>Sin imagen publicada</small>
+        {% endif %}
+      </div>
+      {% endif %}
+      <div class="encyclopedia-entry-card__body">
+        <p class="encyclopedia-entry-card__category">{{ title }}</p>
+        <h2><a href="{{ entry.url }}">{{ entry.data.title or entry.fileSlug }}</a></h2>
+        {% if entry.data.identity %}<p class="encyclopedia-entry-card__identity">{{ entry.data.identity }}</p>{% endif %}
+        {% if entry.data.description %}<p class="encyclopedia-entry-card__description">{{ entry.data.description }}</p>{% endif %}
+        <a class="encyclopedia-entry-card__link" href="{{ entry.url }}" aria-label="Abrir ficha: {{ entry.data.title or entry.fileSlug }}">Consultar ficha <span aria-hidden="true">↗</span></a>
+      </div>
     </article>
     {% endfor %}
   </div>
   {% else %}
-  <p class="encyclopedia-empty">Aún no hay fichas autorizadas para esta categoría.</p>
+  <div class="encyclopedia-empty-state">
+    <span class="encyclopedia-empty-state__mark" aria-hidden="true">—</span>
+    <div><h2>Aún no hay fichas publicadas</h2><p>Esta categoría aparecerá aquí cuando haya información autorizada para consulta.</p></div>
+    <a href="/enciclopedia/">Volver a la enciclopedia</a>
+  </div>
   {% endif %}
 </div>

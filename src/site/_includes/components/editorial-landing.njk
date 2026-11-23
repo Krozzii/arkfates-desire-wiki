@@ -3,7 +3,20 @@
   {% include "components/library-catalog.njk" %}
   {% elif sectionKind == "novedades" %}
   <p class="editorial-intro">Anuncios y novedades oficiales del proyecto.</p>
+  {% if collections.news and collections.news.length %}
+  <div class="news-list" aria-label="Novedades publicadas">
+    {% for article in collections.news %}
+    <article class="news-card">
+      {% if article.data.newsPublishedAt %}<time datetime="{{ article.data.newsPublishedAt | libraryDateISO }}">{{ article.data.newsPublishedAt | libraryDate }}</time>{% endif %}
+      <h2><a href="{{ article.url }}">{{ article.data.title }}</a></h2>
+      {% if article.data.newsSummary %}<p>{{ article.data.newsSummary }}</p>{% endif %}
+      <a class="news-card__link" href="{{ article.url }}">Leer novedad <span aria-hidden="true">↗</span></a>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
   <p class="editorial-empty">Todavía no hay novedades publicadas.</p>
+  {% endif %}
   {% elif sectionKind == "comunidad" %}
   <p class="editorial-intro">La comunidad oficial de ArkFates Desiré se organizará en Discord.</p>
   {% if meta.discordInviteUrl %}

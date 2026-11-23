@@ -15,14 +15,15 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
       {% include imp %}
     {% endfor %}
   </head>
-  <body class="theme-{{meta.baseTheme}} markdown-preview-view markdown-rendered markdown-preview-section {% if page.url == '/' %}arkfates-home{% endif %} {% if editorialType %}arkfates-editorial{% endif %} {% if libraryType %}library-page library-page-{{ libraryType }}{% endif %} {% if settings.dgShowFileTree !== true %}no-filetree{% endif %} {% if settings.dgHomeLink === true and settings.dgShowFileTree !== true %}has-navbar{% endif %} {{meta.bodyClasses}}">
+  <body class="theme-{{meta.baseTheme}} markdown-preview-view markdown-rendered markdown-preview-section {% if page.url == '/' %}arkfates-home{% endif %} {% if editorialType %}arkfates-editorial{% endif %} {% if editorialType and 'encyclopedia' in editorialType %}arkfates-encyclopedia{% endif %} {% if libraryType %}library-page library-page-{{ libraryType }}{% endif %} {% if settings.dgShowFileTree !== true %}no-filetree{% endif %} {% if settings.dgHomeLink === true and settings.dgShowFileTree !== true %}has-navbar{% endif %} {{meta.bodyClasses}}">
+    <a class="public-skip-link" href="#main-content">Saltar al contenido</a>
     {%include "components/notegrowthhistory.njk"%}
 
     {% set regionName = "navigation" %}
     {% set regionFallback = "components/navbar.njk" %}
     {% include "components/pluginRegion.njk" %}
 
-    <main class="content cm-s-obsidian print {{contentClasses}}">
+    <main id="main-content" class="content cm-s-obsidian print {{contentClasses}}">
       {% if libraryType %}
       <nav class="editorial-breadcrumbs library-breadcrumbs" aria-label="Ruta de navegación">
         <a href="/">Inicio</a>
@@ -55,6 +56,10 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
           <a href="/enciclopedia/">Enciclopedia</a>
           <span aria-hidden="true">/</span>
           <a href="/enciclopedia/{{ encyclopediaCategory }}/">{{ encyclopediaCategoryTitle }}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{{ title }}</span>
+        {% elif editorialType == "newsArticle" %}
+          <a href="/novedades/">Novedades</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{{ title }}</span>
         {% else %}
@@ -108,6 +113,8 @@ permalink: "notes/{{ page.fileSlug | slugify }}/"
         {% include "components/encyclopedia-category.njk" %}
       {% elif editorialType == "encyclopediaEntry" %}
         {% include "components/encyclopedia-entry.njk" %}
+      {% elif editorialType == "newsArticle" %}
+        {% include "components/news-article.njk" %}
       {% elif editorialType == "landing" %}
         {% include "components/editorial-landing.njk" %}
       {% else %}

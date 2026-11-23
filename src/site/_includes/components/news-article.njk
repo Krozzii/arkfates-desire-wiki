@@ -1,0 +1,7 @@
+<article class="news-article">
+  <header class="news-article__header">
+    {% if newsPublishedAt %}<time datetime="{{ newsPublishedAt | libraryDateISO }}">{{ newsPublishedAt | libraryDate }}</time>{% endif %}
+    {% if newsSummary %}<p class="news-article__summary">{{ newsSummary }}</p>{% endif %}
+  </header>
+  <div class="news-article__body">{{ content | hideDataview | taggify | link | resolveMdLinks | safe }}</div>
+</article>

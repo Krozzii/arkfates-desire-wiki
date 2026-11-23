@@ -1,7 +1,33 @@
-{% set hasDetails = identity or description or history or characteristics or abilities or transformations or relationships or appearances or (content | trim) %}
+{% set hasDetails = identity or description or history or characteristics or abilities or transformations or relationships or appearances or aliases or titles or species or affiliation or universe or status or characterImage or portrait or (relatedReferences and relatedReferences.length) or (content | trim) %}
 <article class="encyclopedia-entry">
+  {% if encyclopediaCategory == "personajes" %}
+  <section class="encyclopedia-character-profile" aria-label="Presentación del personaje">
+    <figure class="encyclopedia-character-portrait">
+      {% if characterImage or portrait %}
+      <img src="{{ (characterImage or portrait) | escape }}" alt="{{ (characterImageAlt or title) | escape }}">
+      {% else %}
+      <div class="encyclopedia-character-portrait__empty" aria-hidden="true"><span></span></div>
+      <figcaption>Sin imagen publicada</figcaption>
+      {% endif %}
+    </figure>
+    <div class="encyclopedia-character-summary">
+      <p class="encyclopedia-profile-type">Ficha de personaje</p>
+      {% if identity %}<p class="encyclopedia-character-identity">{{ identity }}</p>{% endif %}
+      {% if aliases or titles or species or affiliation or universe or status %}
+      <dl>
+        {% if aliases %}<div><dt>Alias</dt><dd>{{ aliases }}</dd></div>{% endif %}
+        {% if titles %}<div><dt>Títulos</dt><dd>{{ titles }}</dd></div>{% endif %}
+        {% if species %}<div><dt>Especie</dt><dd>{{ species }}</dd></div>{% endif %}
+        {% if affiliation %}<div><dt>Afiliación</dt><dd>{{ affiliation }}</dd></div>{% endif %}
+        {% if universe %}<div><dt>Universo</dt><dd>{{ universe }}</dd></div>{% endif %}
+        {% if status %}<div><dt>Estado</dt><dd>{{ status }}</dd></div>{% endif %}
+      </dl>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
   {% if hasDetails %}
-    {% if identity %}<section class="encyclopedia-field"><h2>Identidad</h2><p>{{ identity }}</p></section>{% endif %}
+    {% if identity and encyclopediaCategory != "personajes" %}<section class="encyclopedia-field"><h2>Identidad</h2><p>{{ identity }}</p></section>{% endif %}
     {% if description %}<section class="encyclopedia-field"><h2>Descripción</h2><p>{{ description }}</p></section>{% endif %}
     {% if history %}<section class="encyclopedia-field"><h2>Historia</h2><p>{{ history }}</p></section>{% endif %}
     {% if characteristics %}<section class="encyclopedia-field"><h2>Características</h2><p>{{ characteristics }}</p></section>{% endif %}

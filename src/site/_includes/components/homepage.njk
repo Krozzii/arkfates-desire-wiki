@@ -63,7 +63,22 @@
     </div>
     <span class="af-empty-mark" aria-hidden="true"></span>
   </div>
+  {% if collections.news and collections.news.length %}
+  <div class="af-news-list">
+    {% for article in collections.news %}
+      {% if loop.index <= 3 %}
+      <article class="af-news-item">
+        {% if article.data.newsPublishedAt %}<time datetime="{{ article.data.newsPublishedAt | libraryDateISO }}">{{ article.data.newsPublishedAt | libraryDate }}</time>{% endif %}
+        <h3><a href="{{ article.url }}">{{ article.data.title }}</a></h3>
+        {% if article.data.newsSummary %}<p>{{ article.data.newsSummary }}</p>{% endif %}
+      </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a class="af-text-link" href="/novedades/">Todas las novedades</a>
+  {% else %}
   <p class="af-empty-state">Consulta las <a href="/novedades/">novedades oficiales</a> del proyecto.</p>
+  {% endif %}
 </section>
 
 <section class="af-featured" aria-labelledby="af-featured-title">
